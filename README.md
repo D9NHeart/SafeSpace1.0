@@ -10,27 +10,25 @@ construída com **Python + Textual + SQLite**.
 
 ## 📁 Estrutura do Projeto
 
-
 safespace/
-├── main.py # Ponto de entrada da aplicação
-├── requirements.txt # Dependências Python
+├── main.py                    # Ponto de entrada da aplicação
+├── requirements.txt           # Dependências Python
 ├── config/
-│ └── database.py # Conexão e inicialização do SQLite
+│   └── database.py            # Conexão e inicialização do SQLite
 ├── models/
-│ ├── user_model.py # CRUD de usuários (registro, login, atualização, exclusão)
-│ └── mood_model.py # CRUD de registros de humor
+│   ├── user_model.py          # CRUD de usuários (registro, login)
+│   └── mood_model.py          # CRUD de registros de humor
 ├── screens/
-│ ├── home_screen.py # Tela inicial (login / cadastro)
-│ ├── login_screen.py # Tela de autenticação
-│ ├── register_screen.py # Tela de cadastro com validações
-│ ├── menu_screen.py # Menu principal pós-login
-│ ├── tracking_screen.py # Registro de humor com emojis
-│ ├── reports_screen.py # Relatórios semanais/mensais em gráfico ASCII
-│ └── emergency_screen.py # Simulação de chamada de emergência
+│   ├── home_screen.py         # Tela inicial (login / cadastro)
+│   ├── login_screen.py        # Tela de autenticação
+│   ├── register_screen.py     # Tela de cadastro com validações
+│   ├── menu_screen.py         # Menu principal pós-login
+│   ├── tracking_screen.py     # Registro de humor com emojis
+│   ├── reports_screen.py      # Relatórios semanais/mensais em gráfico ASCII
+│   └── emergency_screen.py    # Simulação de chamada de emergência
 └── utils/
-├── validators.py # Validação de email, senha e telefone
-├── mood_utils.py # Emojis, médias e gráficos de humor
-└── journal_utils.py # Funções auxiliares para manipulação de anotações
+    ├── validators.py          # Validação de email, senha e telefone
+    └── mood_utils.py          # Emojis, cálculo de médias, geração de gráficos
 
 ## ⚙️ Requisitos
 
@@ -103,6 +101,12 @@ python main.py
 ### Emergência
 - Simulação de ligação para o contato cadastrado
 - Retorno automático ao menu após 3 segundos
+
+---
+
+### Tabela de Requisitos Funcionais
+
+[tabela](https://docs.google.com/spreadsheets/d/1Aaw829HiQKvhQ1wD777NaCNEmsDNXbLNe9va6_c-bOA/edit?gid=658685643#gid=658685643)
 
 ---
 

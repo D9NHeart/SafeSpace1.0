@@ -131,3 +131,25 @@ O banco de dados é um arquivo **`safespace.db`** criado automaticamente na raiz
 | mood_level  | INTEGER | Nível de humor (1–6)                  |
 | description | TEXT    | Descrição opcional do estado          |
 | recorded_at | TEXT    | Data e hora exatas do registro        |
+
+
+---
+
+## Releases
+
+### Primeira Release
+
+- Cadastro
+- Login
+- Uso de Hash
+- Tracking de Humor
+- Relatórios
+
+### Segunda Release
+
+- Gameficação
+- A definir
+
+### Terceira Release
+
+- A definir

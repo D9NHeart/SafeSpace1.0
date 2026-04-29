@@ -9,7 +9,7 @@ construída com **Python + Textual + SQLite**.
 ---
 
 ## 📁 Estrutura do Projeto
-
+~~~
 safespace/
 ├── main.py                    # Ponto de entrada da aplicação
 ├── requirements.txt           # Dependências Python
@@ -29,7 +29,7 @@ safespace/
 └── utils/
     ├── validators.py          # Validação de email, senha e telefone
     └── mood_utils.py          # Emojis, cálculo de médias, geração de gráficos
-
+~~~
 ## ⚙️ Requisitos
 
 - Python 3.10+

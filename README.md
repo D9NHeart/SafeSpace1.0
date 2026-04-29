@@ -104,9 +104,11 @@ python main.py
 
 ---
 
-### Tabela de Requisitos Funcionais
+### Links
 
-[tabela](https://docs.google.com/spreadsheets/d/1Aaw829HiQKvhQ1wD777NaCNEmsDNXbLNe9va6_c-bOA/edit?gid=658685643#gid=658685643)
+[Tabela](https://docs.google.com/spreadsheets/d/1Aaw829HiQKvhQ1wD777NaCNEmsDNXbLNe9va6_c-bOA/edit?gid=658685643#gid=658685643)
+
+[Drive com FLuxogramas](https://drive.google.com/drive/folders/1aEIOD8yApYT1ZIaKUCenpD78d5r2H1Jd)
 
 ---
 

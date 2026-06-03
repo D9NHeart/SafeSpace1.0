@@ -110,6 +110,8 @@ python main.py
 
 [Drive com FLuxogramas](https://drive.google.com/drive/folders/1aEIOD8yApYT1ZIaKUCenpD78d5r2H1Jd)
 
+[artigo](https://www.overleaf.com/read/nqvffwdfntrf#f2ac9e)
+
 ---
 
 ## 🗄️ Banco de Dados

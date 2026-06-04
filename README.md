@@ -138,6 +138,16 @@ python main.py
 
 ---
 
+### Links
+
+[Tabela](https://docs.google.com/spreadsheets/d/1Aaw829HiQKvhQ1wD777NaCNEmsDNXbLNe9va6_c-bOA/edit?gid=658685643#gid=658685643)
+
+[Drive com FLuxogramas](https://drive.google.com/drive/folders/1aEIOD8yApYT1ZIaKUCenpD78d5r2H1Jd)
+
+[Artigo](https://www.overleaf.com/read/nqvffwdfntrf#f2ac9e)
+
+---
+
 ##  Banco de Dados
 
 Arquivo **`safespace.db`** criado automaticamente na raiz do projeto.

@@ -108,6 +108,7 @@ python main.py
   - 😁 Muito Feliz (6)
 - Campo de descrição opcional
 - Múltiplos registros por dia com timestamp
+- Tracking de Medicamentos e alimentação (opcional)
 
 ### Relatórios
 - Visualização por **semana** ou **mês**
@@ -136,6 +137,11 @@ python main.py
 - Retorno automático ao menu após 3 segundos
 - Botão de cancelar disponível a qualquer momento
 
+### Tracking Medicamentos e Alimentação
+
+- Usuário escolhe se precisa de ajuda para controlar alimentação e remédios
+- Avisos diários de Alimentação e remédios caso precise
+- Checkbox no tracking
 ---
 
 ### Links
@@ -173,6 +179,13 @@ Arquivo **`safespace.db`** criado automaticamente na raiz do projeto.
 | recorded_at | TEXT       | Data e hora do registro          |
 
 ---
+
+
+## Funcionalidades 2ª VA
+
+- Opção de se manter logado entre sessões
+- Sistema de autoregulação
+- Tracking de alimentação e medicação
 
 ## Próximas Funcionalidades
 

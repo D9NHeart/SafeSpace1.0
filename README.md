@@ -116,6 +116,14 @@ python main.py
 - Gráfico de barras ASCII com flutuação de humor
 - Média diária e média geral do período com emoji
 
+### Configuração
+
+- Trocar nome
+- Trocar telefone de emergência
+- Trocar tempo do sistema de relaxamento
+- Alterar opções de tracking de medicamento e alimentação
+- Deletar Conta
+
 ###  Momento de Calma
 - Tela de baixo estímulo com paleta escura em tons de roxo
 - Ruído branco real tocando em background durante toda a sessão
@@ -186,6 +194,8 @@ Arquivo **`safespace.db`** criado automaticamente na raiz do projeto.
 - Opção de se manter logado entre sessões
 - Sistema de autoregulação
 - Tracking de alimentação e medicação
+- POO
+- Sistema de configuração
 
 ## Próximas Funcionalidades
 

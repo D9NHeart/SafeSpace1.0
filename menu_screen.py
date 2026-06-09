@@ -7,6 +7,7 @@ from textual.screen import Screen
 from textual.widgets import Static, Button
 from textual.containers import Container, Vertical
 from login_screen import clear_session
+from database import get_today_checklist
 
 
 class MenuScreen(Screen):
@@ -73,6 +74,15 @@ class MenuScreen(Screen):
         color: $text-muted;
         margin-top: 1;
     }
+
+    #wellness-banner {
+        text-align: center;
+        background: #3a2800;
+        color: #ffd080;
+        padding: 0 1;
+        margin-bottom: 1;
+        border: solid #7a5800 60%;
+    }
     """
 
     BINDINGS = [
@@ -87,6 +97,8 @@ class MenuScreen(Screen):
         with Container(id="menu-container"):
             yield Static("🌿  SafeSpace", id="menu-header")
             yield Static(f"Olá, {name} 👋", id="menu-user")
+            # Banner de lembretes — preenchido em on_mount após verificar o checklist
+            yield Static("", id="wellness-banner")
             with Vertical():
                 yield Button("💭  Tracking de Humor", id="btn-tracking", classes="menu-btn")
                 yield Button("🌙  Momento de Calma", id="btn-calm", classes="menu-btn")
@@ -95,6 +107,41 @@ class MenuScreen(Screen):
                 yield Button("🏠  Tela Inicial", id="btn-home", classes="menu-btn")
                 yield Button("🚪  Sair", id="btn-quit", classes="menu-btn")
             yield Static("[dim]ESC: Início │ Q: Sair[/]", id="footer-hint")
+
+    def on_mount(self) -> None:
+        """Verifica o checklist do dia e exibe o banner de lembretes se necessário."""
+        self._refresh_wellness_banner()
+
+    def on_screen_resume(self) -> None:
+        """Atualiza o banner sempre que o menu voltar ao topo da pilha (ex: após tracking)."""
+        self._refresh_wellness_banner()
+
+    def _refresh_wellness_banner(self) -> None:
+        user = getattr(self.app, "current_user", {}) or {}
+        user_id = user.get("id")
+        needs_food = user.get("needs_food_reminder", False)
+        needs_meds = user.get("needs_medication_reminder", False)
+
+        banner = self.query_one("#wellness-banner", Static)
+
+        if not user_id or not (needs_food or needs_meds):
+            banner.display = False
+            return
+
+        checklist = get_today_checklist(user_id)
+        pending = []
+
+        if needs_food and not checklist["ate_today"]:
+            pending.append("🍽️ alimentar")
+        if needs_meds and not checklist["took_meds"]:
+            pending.append("💊 tomar remédios")
+
+        if pending:
+            items = " e ".join(pending)
+            banner.update(f"⚠  Lembrete: você ainda precisa {items} hoje!")
+            banner.display = True
+        else:
+            banner.display = False
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         btn = event.button.id

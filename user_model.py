@@ -30,7 +30,8 @@ def _verify_password(password: str, stored_hash: str) -> bool:
 
 class UserModel:
 
-    def register(self, name: str, email: str, password: str, emergency_contact: str = "") -> tuple[bool, str]:
+    def register(self, name: str, email: str, password: str, emergency_contact: str = "",
+                 needs_food_reminder: bool = False, needs_medication_reminder: bool = False) -> tuple[bool, str]:
 
         try:
             conn = get_connection()
@@ -45,8 +46,10 @@ class UserModel:
             contact = emergency_contact.strip() if emergency_contact else None
 
             cursor.execute(
-                "INSERT INTO users (name, email, password_hash, emergency_contact) VALUES (?, ?, ?, ?)",
-                (name, email.lower(), stored, contact),
+                "INSERT INTO users (name, email, password_hash, emergency_contact, "
+                "needs_food_reminder, needs_medication_reminder) VALUES (?, ?, ?, ?, ?, ?)",
+                (name, email.lower(), stored, contact,
+                 int(needs_food_reminder), int(needs_medication_reminder)),
             )
             conn.commit()
             cursor.close()
@@ -62,7 +65,8 @@ class UserModel:
             cursor = conn.cursor()
 
             cursor.execute(
-                "SELECT id, name, email, password_hash, emergency_contact FROM users WHERE email = ?",
+                "SELECT id, name, email, password_hash, emergency_contact, "
+                "needs_food_reminder, needs_medication_reminder FROM users WHERE email = ?",
                 (email.lower(),),
             )
             row = cursor.fetchone()
@@ -80,6 +84,8 @@ class UserModel:
                 "name": row["name"],
                 "email": row["email"],
                 "emergency_contact": row["emergency_contact"],
+                "needs_food_reminder": bool(row["needs_food_reminder"]),
+                "needs_medication_reminder": bool(row["needs_medication_reminder"]),
             }
         except Exception as e:
             return False, f"Erro ao fazer login: {e}"
@@ -90,13 +96,23 @@ class UserModel:
             conn = get_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT id, name, email, emergency_contact FROM users WHERE id = ?",
+                "SELECT id, name, email, emergency_contact, "
+                "needs_food_reminder, needs_medication_reminder FROM users WHERE id = ?",
                 (user_id,),
             )
             row = cursor.fetchone()
             cursor.close()
             conn.close()
-            return dict(row) if row else None
+            if row is None:
+                return None
+            return {
+                "id": row["id"],
+                "name": row["name"],
+                "email": row["email"],
+                "emergency_contact": row["emergency_contact"],
+                "needs_food_reminder": bool(row["needs_food_reminder"]),
+                "needs_medication_reminder": bool(row["needs_medication_reminder"]),
+            }
         except Exception:
             return None
 

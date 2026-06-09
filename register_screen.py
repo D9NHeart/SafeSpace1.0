@@ -4,7 +4,7 @@ Tela de Cadastro
 
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, Button, Input, Label
+from textual.widgets import Static, Button, Input, Label, Checkbox
 from textual.containers import Container, Vertical, ScrollableContainer
 from user_model import UserModel
 from validators import validate_email, validate_password, validate_phone, format_phone
@@ -97,6 +97,28 @@ class RegisterScreen(Screen):
         padding: 1;
         margin-bottom: 1;
     }
+
+    #wellness-section {
+        border: solid $primary 40%;
+        padding: 1 2;
+        margin-top: 1;
+        margin-bottom: 1;
+    }
+
+    #wellness-title {
+        color: $primary;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #wellness-hint {
+        color: $text-muted;
+        margin-bottom: 1;
+    }
+
+    .wellness-check {
+        margin-bottom: 1;
+    }
     """
 
     BINDINGS = [
@@ -136,6 +158,22 @@ class RegisterScreen(Screen):
             yield Static("Ex: (81) 99999-9999", classes="field-hint")
             yield Input(placeholder="(XX) XXXXX-XXXX", id="phone-input")
             yield Static("", id="phone-error", classes="field-error")
+
+            yield Static("🌱  Lembretes de Bem-Estar (opcional):", id="wellness-title")
+            yield Static(
+                "Ative para receber avisos diários no menu principal:",
+                id="wellness-hint",
+            )
+            yield Checkbox(
+                "🍽️  Preciso de ajuda para lembrar de me alimentar",
+                id="food-reminder-check",
+                classes="wellness-check",
+            )
+            yield Checkbox(
+                "💊  Tomo medicamentos e quero ser lembrado(a)",
+                id="med-reminder-check",
+                classes="wellness-check",
+            )
 
             yield Static("", id="global-error")
             yield Static("", id="global-success")
@@ -193,7 +231,14 @@ class RegisterScreen(Screen):
         if has_error:
             return
 
-        success, message = self._user_model.register(name, email, password, phone)
+        needs_food = self.query_one("#food-reminder-check", Checkbox).value
+        needs_meds = self.query_one("#med-reminder-check", Checkbox).value
+
+        success, message = self._user_model.register(
+            name, email, password, phone,
+            needs_food_reminder=needs_food,
+            needs_medication_reminder=needs_meds,
+        )
 
         if not success:
             self.query_one("#global-error", Static).update(f"⚠ {message}")

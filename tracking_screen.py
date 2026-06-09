@@ -4,10 +4,11 @@ Tela de Tracking de Humor
 
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, Button, TextArea
+from textual.widgets import Static, Button, TextArea, Checkbox
 from textual.containers import Container, Vertical, Horizontal
 from mood_model import MoodModel
-from mood_utils import MOOD_EMOJIS, MOOD_LABELS, mood_to_emoji
+from mood_utils import MOOD_EMOJIS, MOOD_LABELS
+from database import get_today_checklist, upsert_checklist
 
 
 class TrackingScreen(Screen):
@@ -80,8 +81,22 @@ class TrackingScreen(Screen):
 
     #description-area {
         height: 5;
-        margin-bottom: 1;
+        margin-bottom: 2;
         border: solid $surface-lighten-1;
+    }
+
+    #wellness-title {
+        color: $primary;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #ate-today-check {
+        margin-bottom: 1;
+    }
+
+    #took-meds-check {
+        margin-bottom: 1;
     }
 
     #msg {
@@ -113,13 +128,11 @@ class TrackingScreen(Screen):
     ]
 
     def __init__(self):
-
         super().__init__()
         self._mood_model = MoodModel()
         self._selected_mood: int | None = None
 
     def compose(self) -> ComposeResult:
-        """widgets tracking de humor."""
         with Container(id="tracking-container"):
             yield Static("💭  Como você está agora?", id="tracking-title")
             yield Static("Selecione o emoji que melhor representa seu humor:", id="tracking-subtitle")
@@ -127,70 +140,99 @@ class TrackingScreen(Screen):
             with Vertical(id="emoji-grid"):
                 with Horizontal(classes="emoji-row"):
                     for level in range(1, 4):
-                        emoji = MOOD_EMOJIS[level]
-                        label = MOOD_LABELS[level]
                         yield Button(
-                            f"{emoji}  {label}",
+                            f"{MOOD_EMOJIS[level]}  {MOOD_LABELS[level]}",
                             id=f"mood-{level}",
                             classes="emoji-btn",
                         )
                 with Horizontal(classes="emoji-row"):
                     for level in range(4, 7):
-                        emoji = MOOD_EMOJIS[level]
-                        label = MOOD_LABELS[level]
                         yield Button(
-                            f"{emoji}  {label}",
+                            f"{MOOD_EMOJIS[level]}  {MOOD_LABELS[level]}",
                             id=f"mood-{level}",
                             classes="emoji-btn",
                         )
 
             yield Static("Selecione um emoji acima ↑", id="selected-label")
-
             yield Static("📝  Como você está se sentindo? (opcional):", id="description-label")
             yield TextArea(id="description-area")
+
+            # Placeholder onde os checkboxes serão injetados em on_mount
+            yield Static("", id="wellness-anchor")
 
             yield Static("", id="msg")
             yield Button("💾  Salvar Registro", id="btn-save")
             yield Button("← Voltar ao Menu", id="btn-back")
             yield Static("[dim]ESC: Voltar[/]", id="footer-hint")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    def on_mount(self) -> None:
+        user = getattr(self.app, "current_user", None) or {}
+        user_id = user.get("id")
+        needs_food = user.get("needs_food_reminder", False)
+        needs_meds = user.get("needs_medication_reminder", False)
 
+        if not (needs_food or needs_meds):
+            return
+
+        anchor = self.query_one("#wellness-anchor")
+        checklist = get_today_checklist(user_id) if user_id else {}
+
+        # Monta título
+        anchor.update("✅  Checklist do dia:")
+        anchor.styles.color = "rgb(150,120,255)"
+        anchor.styles.text_style = "bold"
+        anchor.styles.margin = (0, 0, 1, 0)
+
+        container = self.query_one("#tracking-container")
+        msg_widget = self.query_one("#msg")
+
+        if needs_food:
+            cb = Checkbox(
+                "🍽️  Já me alimentei hoje",
+                id="ate-today-check",
+                value=checklist.get("ate_today", False),
+            )
+            container.mount(cb, before=msg_widget)
+
+        if needs_meds:
+            cb = Checkbox(
+                "💊  Já tomei meus medicamentos hoje",
+                id="took-meds-check",
+                value=checklist.get("took_meds", False),
+            )
+            container.mount(cb, before=msg_widget)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         btn_id = event.button.id
 
         if btn_id and btn_id.startswith("mood-"):
-            level = int(btn_id.split("-")[1])
-            self._select_mood(level)
-
+            self._select_mood(int(btn_id.split("-")[1]))
         elif btn_id == "btn-save":
             self._save_entry()
-
         elif btn_id == "btn-back":
             self.action_go_back()
 
-    def _select_mood(self, level: int) -> None:
-        """
-        Atualiza a seleção de humor atual"""
-        self._selected_mood = level
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        """Persiste o checklist imediatamente ao marcar/desmarcar."""
+        user = getattr(self.app, "current_user", None)
+        if not user:
+            return
+        if event.checkbox.id == "ate-today-check":
+            upsert_checklist(user["id"], ate_today=event.value)
+        elif event.checkbox.id == "took-meds-check":
+            upsert_checklist(user["id"], took_meds=event.value)
 
+    def _select_mood(self, level: int) -> None:
+        self._selected_mood = level
         for i in range(1, 7):
             btn = self.query_one(f"#mood-{i}", Button)
-            if i == level:
-                btn.add_class("selected")
-            else:
-                btn.remove_class("selected")
-
-        emoji = MOOD_EMOJIS[level]
-        label = MOOD_LABELS[level]
+            btn.add_class("selected") if i == level else btn.remove_class("selected")
         self.query_one("#selected-label", Static).update(
-            f"Selecionado: {emoji}  {label}"
+            f"Selecionado: {MOOD_EMOJIS[level]}  {MOOD_LABELS[level]}"
         )
         self.query_one("#msg", Static).update("")
 
     def _save_entry(self) -> None:
-        """
-        Salva o registro de humor 
-        """
         if self._selected_mood is None:
             self.query_one("#msg", Static).update("[red]⚠ Selecione um emoji primeiro![/]")
             return
@@ -201,7 +243,6 @@ class TrackingScreen(Screen):
             return
 
         description = self.query_one("#description-area", TextArea).text.strip()
-
         success, message = self._mood_model.save_entry(
             user_id=user["id"],
             mood_level=self._selected_mood,
@@ -209,6 +250,22 @@ class TrackingScreen(Screen):
         )
 
         if success:
+            needs_food = user.get("needs_food_reminder", False)
+            needs_meds = user.get("needs_medication_reminder", False)
+            if needs_food or needs_meds:
+                ate_val, meds_val = None, None
+                try:
+                    if needs_food:
+                        ate_val = self.query_one("#ate-today-check", Checkbox).value
+                except Exception:
+                    pass
+                try:
+                    if needs_meds:
+                        meds_val = self.query_one("#took-meds-check", Checkbox).value
+                except Exception:
+                    pass
+                upsert_checklist(user["id"], ate_today=ate_val, took_meds=meds_val)
+
             self.query_one("#msg", Static).update(f"[green]✓ {message}[/]")
             self._selected_mood = None
             for i in range(1, 7):
@@ -219,5 +276,4 @@ class TrackingScreen(Screen):
             self.query_one("#msg", Static).update(f"[red]⚠ {message}[/]")
 
     def action_go_back(self) -> None:
-        """Volta para o menu principal."""
         self.app.pop_screen()

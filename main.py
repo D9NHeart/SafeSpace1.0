@@ -19,6 +19,7 @@ from tracking_screen import TrackingScreen
 from reports_screen import ReportsScreen
 from emergency_screen import EmergencyScreen
 from meltdown_screen import CalmScreen
+from settings_screen import SettingsScreen
 
 
 class SafeSpaceApp(App):
@@ -62,6 +63,7 @@ class SafeSpaceApp(App):
         "reports": ReportsScreen,
         "calm": CalmScreen,
         "emergency": EmergencyScreen,
+        "settings": SettingsScreen,
     }
 
     def __init__(self):

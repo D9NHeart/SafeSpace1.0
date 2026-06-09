@@ -66,7 +66,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT id, name, email, password_hash, emergency_contact, "
-                "needs_food_reminder, needs_medication_reminder FROM users WHERE email = ?",
+                "calm_timer, needs_food_reminder, needs_medication_reminder FROM users WHERE email = ?",
                 (email.lower(),),
             )
             row = cursor.fetchone()
@@ -84,6 +84,7 @@ class UserModel:
                 "name": row["name"],
                 "email": row["email"],
                 "emergency_contact": row["emergency_contact"],
+                "calm_timer": row["calm_timer"] if row["calm_timer"] is not None else 3,
                 "needs_food_reminder": bool(row["needs_food_reminder"]),
                 "needs_medication_reminder": bool(row["needs_medication_reminder"]),
             }
@@ -97,7 +98,7 @@ class UserModel:
             cursor = conn.cursor()
             cursor.execute(
                 "SELECT id, name, email, emergency_contact, "
-                "needs_food_reminder, needs_medication_reminder FROM users WHERE id = ?",
+                "calm_timer, needs_food_reminder, needs_medication_reminder FROM users WHERE id = ?",
                 (user_id,),
             )
             row = cursor.fetchone()
@@ -110,6 +111,7 @@ class UserModel:
                 "name": row["name"],
                 "email": row["email"],
                 "emergency_contact": row["emergency_contact"],
+                "calm_timer": row["calm_timer"] if row["calm_timer"] is not None else 3,
                 "needs_food_reminder": bool(row["needs_food_reminder"]),
                 "needs_medication_reminder": bool(row["needs_medication_reminder"]),
             }

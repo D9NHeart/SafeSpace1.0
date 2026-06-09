@@ -65,6 +65,11 @@ class MenuScreen(Screen):
         background: $surface-darken-2;
     }
 
+    #btn-settings {
+        background: #2a3a4a;
+        color: #a8c8e8;
+    }
+
     #btn-quit {
         background: $surface-darken-3;
     }
@@ -104,6 +109,7 @@ class MenuScreen(Screen):
                 yield Button("🌙  Momento de Calma", id="btn-calm", classes="menu-btn")
                 yield Button("📊  Relatórios", id="btn-reports", classes="menu-btn")
                 yield Button("🆘  Emergência", id="btn-emergency", classes="menu-btn")
+                yield Button("⚙️   Configurações", id="btn-settings", classes="menu-btn")
                 yield Button("🏠  Tela Inicial", id="btn-home", classes="menu-btn")
                 yield Button("🚪  Sair", id="btn-quit", classes="menu-btn")
             yield Static("[dim]ESC: Início │ Q: Sair[/]", id="footer-hint")
@@ -153,6 +159,8 @@ class MenuScreen(Screen):
             self.app.push_screen("reports")
         elif btn == "btn-emergency":
             self.app.push_screen("emergency")
+        elif btn == "btn-settings":
+            self.app.push_screen("settings")
         elif btn == "btn-home":
             self.action_go_home()
         elif btn == "btn-quit":

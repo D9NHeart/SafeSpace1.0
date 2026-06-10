@@ -1,10 +1,9 @@
 # 🌿 SafeSpace — Controle de Humor
 
-
-###
 Aplicação TUI (Terminal User Interface) de controle e acompanhamento de humor,
-construída com **Python + Textual + SQLite**. 
-###
+construída com **Python + Textual + SQLite**, desenvolvida com foco em acessibilidade
+para pessoas com TEA, TDA e TDAH.
+
 ---
 
 ## 📁 Estrutura do Projeto
@@ -22,14 +21,16 @@ safespace/
 ├── login_screen.py         # Tela de autenticação
 ├── register_screen.py      # Tela de cadastro
 ├── menu_screen.py          # Menu principal pós-login
-├── tracking_screen.py      # Registro de humor com emojis
+├── tracking_screen.py      # Registro de humor com emojis + checklist de bem-estar
 ├── reports_screen.py       # Relatórios semanais/mensais
 ├── emergency_screen.py     # Tela de contato de emergência
 ├── meltdown_screen.py      # Tela de momento de calma (técnica 5-4-3-2-1)
+├── settings_screen.py      # Tela de configurações do usuário
 ├── validators.py           # Validação de email, senha e telefone
 ├── mood_utils.py           # Emojis, médias e gráficos de humor
 └── journal_utils.py        # Funções auxiliares para anotações
-~~~~
+~~~
+
 ---
 
 ## ⚙️ Requisitos
@@ -65,7 +66,7 @@ python main.py
 
 ---
 
-## Controles e Navegação
+## 🎮 Controles e Navegação
 
 | Tecla     | Ação                        |
 |-----------|-----------------------------|
@@ -77,7 +78,7 @@ python main.py
 
 ---
 
-##  Funcionalidades
+## 🌟 Funcionalidades
 
 ### Tela Inicial
 - Paleta visual suave em roxo, rosa e azul
@@ -108,7 +109,8 @@ python main.py
   - 😁 Muito Feliz (6)
 - Campo de descrição opcional
 - Múltiplos registros por dia com timestamp
-- Tracking de Medicamentos e alimentação (opcional)
+- Checklist de bem-estar integrado (alimentação e medicação) — aparece apenas se ativado nas configurações
+- Persistência imediata do checklist ao marcar/desmarcar, sem necessidade de salvar manualmente
 
 ### Relatórios
 - Visualização por **semana** ou **mês**
@@ -116,15 +118,13 @@ python main.py
 - Gráfico de barras ASCII com flutuação de humor
 - Média diária e média geral do período com emoji
 
-### Configuração
+### ⚙️ Configurações
+- Atualizar nome e telefone de emergência
+- Escolher duração da sessão de calma: 3, 5 ou 10 minutos
+- Ativar/desativar lembretes de alimentação e medicação
+- Exclusão de conta com confirmação em dois passos para evitar exclusão acidental
 
-- Trocar nome
-- Trocar telefone de emergência
-- Trocar tempo do sistema de relaxamento
-- Alterar opções de tracking de medicamento e alimentação
-- Deletar Conta
-
-###  Momento de Calma
+### 🌙 Momento de Calma
 - Tela de baixo estímulo com paleta escura em tons de roxo
 - Ruído branco real tocando em background durante toda a sessão
 - Mensagens rotativas baseadas na técnica de grounding **5-4-3-2-1**:
@@ -140,42 +140,34 @@ python main.py
   - 🔄 "Preciso de mais tempo" → reinicia a sessão
   - 🆘 "Ligar para emergência" → vai para a tela de emergência
 
-### Emergência
+### 🆘 Emergência
 - Exibe o contato de emergência cadastrado
 - Retorno automático ao menu após 3 segundos
 - Botão de cancelar disponível a qualquer momento
 
-### Tracking Medicamentos e Alimentação
-
-- Usuário escolhe se precisa de ajuda para controlar alimentação e remédios
-- Avisos diários de Alimentação e remédios caso precise
-- Checkbox no tracking
----
-
-### Links
-
-[Tabela](https://docs.google.com/spreadsheets/d/1Aaw829HiQKvhQ1wD777NaCNEmsDNXbLNe9va6_c-bOA/edit?gid=658685643#gid=658685643)
-
-[Drive com FLuxogramas](https://drive.google.com/drive/folders/1aEIOD8yApYT1ZIaKUCenpD78d5r2H1Jd)
-
-[Artigo](https://www.overleaf.com/read/nqvffwdfntrf#f2ac9e)
+### 💊 Tracking de Medicamentos e Alimentação
+- Usuário escolhe nas configurações se deseja acompanhar alimentação, medicação ou ambos
+- Checklist dinâmico aparece na tela de tracking apenas para quem ativou a funcionalidade
+- Avisos diários integrados ao fluxo de registro de humor
 
 ---
 
-##  Banco de Dados
+## 🗄️ Banco de Dados
 
 Arquivo **`safespace.db`** criado automaticamente na raiz do projeto.
 
 ### Tabela `users`
-| Campo              | Tipo       | Descrição                           |
-|--------------------|------------|-------------------------------------|
-| id                 | INTEGER PK | Identificador único                 |
-| name               | TEXT       | Nome do usuário                     |
-| email              | TEXT       | Email único                         |
-| password_hash      | TEXT       | Hash SHA-256 com salt               |
-| emergency_contact  | TEXT       | Telefone de emergência (opcional)   |
-| calm_timer         | INTEGER    | Duração da sessão de calma (min)    |
-| created_at         | TEXT       | Data de cadastro                    |
+| Campo                      | Tipo       | Descrição                              |
+|----------------------------|------------|----------------------------------------|
+| id                         | INTEGER PK | Identificador único                    |
+| name                       | TEXT       | Nome do usuário                        |
+| email                      | TEXT       | Email único                            |
+| password_hash              | TEXT       | Hash SHA-256 com salt                  |
+| emergency_contact          | TEXT       | Telefone de emergência (opcional)      |
+| calm_timer                 | INTEGER    | Duração da sessão de calma (min)       |
+| needs_food_reminder        | INTEGER    | Lembrete de alimentação ativo (0 ou 1) |
+| needs_medication_reminder  | INTEGER    | Lembrete de medicação ativo (0 ou 1)   |
+| created_at                 | TEXT       | Data de cadastro                       |
 
 ### Tabela `mood_entries`
 | Campo       | Tipo       | Descrição                        |
@@ -186,20 +178,36 @@ Arquivo **`safespace.db`** criado automaticamente na raiz do projeto.
 | description | TEXT       | Descrição opcional               |
 | recorded_at | TEXT       | Data e hora do registro          |
 
+### Tabela `daily_checklist`
+| Campo      | Tipo       | Descrição                              |
+|------------|------------|----------------------------------------|
+| id         | INTEGER PK | Identificador único                    |
+| user_id    | INTEGER FK | Referência ao usuário                  |
+| date       | TEXT       | Data do checklist (YYYY-MM-DD)         |
+| ate_today  | INTEGER    | Alimentou-se hoje (0 ou 1)             |
+| took_meds  | INTEGER    | Tomou medicação hoje (0 ou 1)          |
+
 ---
 
+## 🔖 Links do Projeto
 
-## Funcionalidades 2ª VA
+- [Tabela de Requisitos](https://docs.google.com/spreadsheets/d/1Aaw829HiQKvhQ1wD777NaCNEmsDNXbLNe9va6_c-bOA/edit?gid=658685643#gid=658685643)
+- [Drive com Fluxogramas](https://drive.google.com/drive/folders/1aEIOD8yApYT1ZIaKUCenpD78d5r2H1Jd)
+- [Artigo](https://www.overleaf.com/read/nqvffwdfntrf#f2ac9e)
+
+---
+
+## ✅ Funcionalidades entregues na 2ª VA
 
 - Opção de se manter logado entre sessões
-- Sistema de autoregulação
+- Sistema de autorregulação (Momento de Calma com técnica 5-4-3-2-1 e ruído branco)
 - Tracking de alimentação e medicação
-- POO
-- Sistema de configuração
+- Sistema de configurações completo
+- Encriptação de senha com SHA-256 e salt
+- POO aplicada em toda a arquitetura
 
-## Próximas Funcionalidades
+## 🔮 Próximas Funcionalidades
 
-- **Tela de Configurações** — ajuste do timer da sessão de calma (3, 5 ou 10 min) e outras preferências do usuário
 - **Minijogo de Calma** — jogo simples e de baixo estímulo integrado ao app, usando pygame, voltado para regulação sensorial
 - **Gamificação** — sistema de conquistas e recompensas para incentivar o uso consistente do app
-- **Perfil do Usuário** — tela para editar nome, email e contato de emergência
+- **Notificações periódicas** — lembretes proativos de bem-estar ao longo do dia
